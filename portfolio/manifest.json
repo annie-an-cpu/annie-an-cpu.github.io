@@ -1,0 +1,14 @@
+{
+  "routes": [
+    "/",
+    "/projects/ai-production/",
+    "/projects/creative-film/",
+    "/projects/mexc-brand/",
+    "/projects/virtual-human/",
+    "/projects/zongzi-halloween/",
+    "/projects/zongzi-ip/",
+    "/resume/"
+  ],
+  "asset_count": 27,
+  "asset_bytes": 32334129
+}
