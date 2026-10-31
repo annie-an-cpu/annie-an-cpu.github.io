@@ -804,3 +804,13 @@ function updateFooterAttribution() {
 document.addEventListener('DOMContentLoaded', updateFooterAttribution);
 new MutationObserver(updateFooterAttribution).observe(document.documentElement, { childList: true, subtree: true });
 new MutationObserver(updateRequestedBrandCopy).observe(document.documentElement, { childList: true, subtree: true });
+
+// Install the shared media guard on every page that loads the support bundle.
+(function loadMediaProtection() {
+  if (window.__aniyaMediaProtectionLoading || window.__aniyaMediaProtectionInstalled) return;
+  window.__aniyaMediaProtectionLoading = true;
+  const script = document.createElement('script');
+  script.src = '/media-protection.js';
+  script.dataset.mediaProtection = 'true';
+  document.head.appendChild(script);
+})();
