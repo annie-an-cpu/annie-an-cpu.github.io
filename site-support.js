@@ -555,6 +555,8 @@ function updateCapabilitiesAbout() {
   if (!capabilitiesReplacementReady) return;
   const section = document.querySelector('section.framer-99wld3');
   if (!section || capabilitiesReplacementStarted) return;
+  section.remove();
+  return;
   capabilitiesReplacementStarted = true;
   Promise.all([
     fetch('/portfolio/approach-about.html?v=about-section-removed-20261026').then(response => {
