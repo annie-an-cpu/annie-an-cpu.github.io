@@ -524,7 +524,7 @@ function updateProjects() {
       if (!projectLink) return;
       event.preventDefault();
       event.stopPropagation();
-      openProjectLightbox(projectLink.dataset.projectLightbox, projectLink.dataset.projectLabel || '项目预览', projectLink.dataset.projectLong === 'true');
+      openProjectLightbox(projectLink.dataset.projectLightbox, projectLink.dataset.projectLabel || '项目预览', projectLink.dataset.projectLong === 'true', projectLink);
     }, true);
     filters.forEach(button => {
       button.addEventListener('click', () => {
@@ -665,10 +665,15 @@ function updateCapabilitiesAbout() {
   });
 }
 
-let projectLightboxReturnY = null;
+let projectLightboxReturnState = null;
 
-function openProjectLightbox(source, label, longImage = false) {
-  projectLightboxReturnY = window.scrollY;
+function openProjectLightbox(source, label, longImage = false, trigger = null) {
+  const returnTrigger = trigger instanceof Element ? trigger : null;
+  projectLightboxReturnState = {
+    scrollY: window.scrollY,
+    trigger: returnTrigger,
+    triggerTop: returnTrigger?.getBoundingClientRect().top ?? null
+  };
   let modal = document.querySelector('.project-lightbox');
   if (!modal) {
     modal = document.createElement('div');
@@ -706,10 +711,17 @@ function renderMexcProjectDetail() {
 function closeProjectLightbox() {
   document.querySelector('.project-lightbox')?.remove();
   document.body.style.overflow = '';
-  if (projectLightboxReturnY !== null) {
-    const returnY = projectLightboxReturnY;
-    projectLightboxReturnY = null;
-    requestAnimationFrame(() => window.scrollTo({ top: returnY, left: 0, behavior: 'auto' }));
+  if (projectLightboxReturnState) {
+    const returnState = projectLightboxReturnState;
+    projectLightboxReturnState = null;
+    requestAnimationFrame(() => {
+      let returnY = returnState.scrollY;
+      if (returnState.trigger?.isConnected && returnState.triggerTop !== null) {
+        returnY += returnState.trigger.getBoundingClientRect().top - returnState.triggerTop;
+      }
+      window.scrollTo({ top: returnY, left: 0, behavior: 'auto' });
+      requestAnimationFrame(() => returnState.trigger?.focus({ preventScroll: true }));
+    });
   }
 }
 
@@ -718,7 +730,7 @@ document.addEventListener('click', event => {
   if (!card) return;
   event.preventDefault();
   event.stopImmediatePropagation();
-  openProjectLightbox(card.dataset.projectLightbox, card.querySelector('img')?.alt || '项目预览');
+  openProjectLightbox(card.dataset.projectLightbox, card.querySelector('img')?.alt || '项目预览', card.dataset.projectLong === 'true', card);
 }, true);
 document.addEventListener('keydown', event => { if (event.key === 'Escape') closeProjectLightbox(); });
 
