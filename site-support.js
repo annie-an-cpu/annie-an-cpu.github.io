@@ -13,12 +13,45 @@ if (document.head) {
   });
 }
 
+let aniyaSiteRevealed = false;
+let aniyaRevealPending = false;
+
 function revealAniyaSite() {
+  if (aniyaSiteRevealed) return;
+  aniyaSiteRevealed = true;
   document.documentElement.classList.remove('aniya-site-loading');
   document.getElementById('aniya-boot-cloak')?.remove();
 }
 
-const aniyaRevealFallback = setTimeout(revealAniyaSite, 5000);
+function waitForAniyaSiteReady(startedAt = performance.now()) {
+  if (aniyaSiteRevealed || aniyaRevealPending) return;
+  const hero = document.querySelector('.framer-y530rz');
+  const heroImages = hero ? [...hero.querySelectorAll('.framer-1qfyukv img, .framer-1yrlke2 img')].filter(image => image.getClientRects().length) : [];
+  const heroImageReady = heroImages.length > 0 && heroImages.some(image => image.complete && image.naturalWidth > 0);
+  const heroCopyReady = Boolean(
+    hero?.querySelectorAll('.home-hero-title-line').length === 2 &&
+    hero.querySelector('.home-hero-intro') &&
+    hero.querySelector('.home-hero-button') &&
+    hero.querySelector('.home-portfolio-word')
+  );
+  const projectsReady = Boolean(document.querySelector('selected-work-portfolio#selected-work'));
+  const profileReady = Boolean(document.querySelector('capabilities-about-portfolio#capabilities-about'));
+
+  if (heroImageReady && heroCopyReady && projectsReady && profileReady) {
+    aniyaRevealPending = true;
+    const fontsReady = document.fonts?.ready || Promise.resolve();
+    fontsReady.finally(() => requestAnimationFrame(() => requestAnimationFrame(revealAniyaSite)));
+    return;
+  }
+
+  if (performance.now() - startedAt < 12000) {
+    setTimeout(() => waitForAniyaSiteReady(startedAt), 100);
+  } else {
+    revealAniyaSite();
+  }
+}
+
+const aniyaRevealFallback = setTimeout(revealAniyaSite, 13000);
 
 // Remove the template promotion overlays across all routes and screen sizes.
 const promotionStyles = document.createElement('style');
@@ -825,10 +858,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 1800);
   setTimeout(renderMexcProjectDetail, 900);
   setTimeout(renderMexcProjectDetail, 2200);
-  setTimeout(() => {
-    clearTimeout(aniyaRevealFallback);
-    revealAniyaSite();
-  }, 2400);
+  waitForAniyaSiteReady();
   const main = document.querySelector('#main');
   if (main) {
     const observer = new MutationObserver(() => requestAnimationFrame(() => { updateHomeHeroCopy(); updateRequestedBrandCopy(); removeRequestedHomeContent(); updateAnimatedBrandStrip(); updateProjects(); updateCapabilitiesAbout(); }));
