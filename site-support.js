@@ -76,6 +76,7 @@ promotionStyles.textContent = `
   .framer-ZQFle .framer-sk1gvi {
     align-items: flex-start !important;
     position: relative !important;
+    top: -10px !important;
     overflow: visible !important;
     z-index: 2147483001 !important;
     isolation: isolate;
@@ -137,6 +138,7 @@ promotionStyles.textContent = `
     .framer-ZQFle .framer-sk1gvi {
       margin-left: 0;
       padding-top: clamp(150px, 15vw, 220px) !important;
+      top: clamp(-28px, -2vw, -18px) !important;
     }
   }
   .framer-ZQFle .framer-1u8snsn > [data-framer-background-image-wrapper] {
