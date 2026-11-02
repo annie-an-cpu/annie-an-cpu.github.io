@@ -114,10 +114,13 @@ promotionStyles.textContent = `
     box-sizing: border-box;
     display: flex;
     inset: 0;
+    height: 100vh;
+    height: 100dvh;
     justify-content: center;
     overscroll-behavior: contain;
     padding: 28px;
     position: fixed;
+    width: 100vw;
     z-index: 2147483647;
   }
   .project-lightbox[hidden] { display: none; }
@@ -705,13 +708,26 @@ function openProjectLightbox(source, label, longImage = false, trigger = null) {
       event.preventDefault();
       modal.scrollTop += event.deltaY;
     }, { passive: false });
+    let touchY = null;
+    modal.addEventListener('touchstart', event => {
+      if (!modal.classList.contains('project-lightbox-long') || event.touches.length !== 1) return;
+      touchY = event.touches[0].clientY;
+    }, { passive: true });
+    modal.addEventListener('touchmove', event => {
+      if (!modal.classList.contains('project-lightbox-long') || touchY === null || event.touches.length !== 1) return;
+      const nextY = event.touches[0].clientY;
+      modal.scrollTop += touchY - nextY;
+      touchY = nextY;
+      event.preventDefault();
+    }, { passive: false });
+    modal.addEventListener('touchend', () => { touchY = null; }, { passive: true });
+    modal.addEventListener('touchcancel', () => { touchY = null; }, { passive: true });
   }
   modal.classList.toggle('project-lightbox-long', longImage);
   modal.scrollTop = 0;
   const isVideo = /\.(mp4|webm|mov)(\?|$)/i.test(source);
   modal.querySelector('.project-lightbox-media').innerHTML = isVideo ? `<video src="${source}" controls preload="metadata" playsinline aria-label="${label}"></video>` : `<img src="${source}" alt="${label}">`;
   const scrollbarWidth = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
-  document.documentElement.style.overflow = 'hidden';
   document.body.style.position = 'fixed';
   document.body.style.top = `-${projectLightboxReturnState.scrollY}px`;
   document.body.style.left = '0';
