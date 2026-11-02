@@ -1,3 +1,18 @@
+const ANIYA_SITE_TITLE = 'Aniya — 品牌视觉设计与 AI 影像作品集';
+
+function enforceAniyaSiteTitle() {
+  if (document.title !== ANIYA_SITE_TITLE) document.title = ANIYA_SITE_TITLE;
+}
+
+enforceAniyaSiteTitle();
+if (document.head) {
+  new MutationObserver(enforceAniyaSiteTitle).observe(document.head, {
+    childList: true,
+    subtree: true,
+    characterData: true
+  });
+}
+
 function revealAniyaSite() {
   document.documentElement.classList.remove('aniya-site-loading');
   document.getElementById('aniya-boot-cloak')?.remove();
@@ -783,7 +798,7 @@ document.addEventListener('click', event => {
 document.addEventListener('keydown', event => { if (event.key === 'Escape') closeProjectLightbox(); });
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.title = 'Aniya — 品牌视觉设计与 AI 影像作品集';
+  enforceAniyaSiteTitle();
   updateHomeHeroCopy();
   updateRequestedBrandCopy();
   removeRequestedHomeContent();
