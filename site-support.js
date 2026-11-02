@@ -1,3 +1,10 @@
+function revealAniyaSite() {
+  document.documentElement.classList.remove('aniya-site-loading');
+  document.getElementById('aniya-boot-cloak')?.remove();
+}
+
+const aniyaRevealFallback = setTimeout(revealAniyaSite, 5000);
+
 // Remove the template promotion overlays across all routes and screen sizes.
 const promotionStyles = document.createElement('style');
 promotionStyles.textContent = `
@@ -776,6 +783,7 @@ document.addEventListener('click', event => {
 document.addEventListener('keydown', event => { if (event.key === 'Escape') closeProjectLightbox(); });
 
 document.addEventListener('DOMContentLoaded', () => {
+  document.title = 'Aniya — 品牌视觉设计与 AI 影像作品集';
   updateHomeHeroCopy();
   updateRequestedBrandCopy();
   removeRequestedHomeContent();
@@ -787,6 +795,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 1800);
   setTimeout(renderMexcProjectDetail, 900);
   setTimeout(renderMexcProjectDetail, 2200);
+  setTimeout(() => {
+    clearTimeout(aniyaRevealFallback);
+    revealAniyaSite();
+  }, 2400);
   const main = document.querySelector('#main');
   if (main) {
     const observer = new MutationObserver(() => requestAnimationFrame(() => { updateHomeHeroCopy(); updateRequestedBrandCopy(); removeRequestedHomeContent(); updateAnimatedBrandStrip(); updateProjects(); updateCapabilitiesAbout(); }));
