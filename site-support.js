@@ -20,7 +20,16 @@ function revealAniyaSite() {
   if (aniyaSiteRevealed) return;
   aniyaSiteRevealed = true;
   document.documentElement.classList.remove('aniya-site-loading');
-  document.getElementById('aniya-boot-cloak')?.remove();
+  const loadingScreen = document.getElementById('aniya-loading-screen');
+  if (loadingScreen) {
+    loadingScreen.classList.add('aniya-loading-exit');
+    setTimeout(() => {
+      loadingScreen.remove();
+      document.getElementById('aniya-boot-cloak')?.remove();
+    }, 180);
+  } else {
+    document.getElementById('aniya-boot-cloak')?.remove();
+  }
 }
 
 function waitForAniyaSiteReady(startedAt = performance.now()) {
