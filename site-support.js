@@ -115,6 +115,7 @@ promotionStyles.textContent = `
     display: flex;
     inset: 0;
     justify-content: center;
+    overscroll-behavior: contain;
     padding: 28px;
     position: fixed;
     z-index: 2147483647;
@@ -674,7 +675,17 @@ function openProjectLightbox(source, label, longImage = false, trigger = null) {
   projectLightboxReturnState = {
     scrollY: window.scrollY,
     trigger: returnTrigger,
-    triggerTop: returnTrigger?.getBoundingClientRect().top ?? null
+    triggerTop: returnTrigger?.getBoundingClientRect().top ?? null,
+    htmlOverflow: document.documentElement.style.overflow,
+    bodyStyles: {
+      position: document.body.style.position,
+      top: document.body.style.top,
+      left: document.body.style.left,
+      right: document.body.style.right,
+      width: document.body.style.width,
+      overflow: document.body.style.overflow,
+      paddingRight: document.body.style.paddingRight
+    }
   };
   let modal = document.querySelector('.project-lightbox');
   if (!modal) {
@@ -699,8 +710,15 @@ function openProjectLightbox(source, label, longImage = false, trigger = null) {
   modal.scrollTop = 0;
   const isVideo = /\.(mp4|webm|mov)(\?|$)/i.test(source);
   modal.querySelector('.project-lightbox-media').innerHTML = isVideo ? `<video src="${source}" controls preload="metadata" playsinline aria-label="${label}"></video>` : `<img src="${source}" alt="${label}">`;
+  const scrollbarWidth = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${projectLightboxReturnState.scrollY}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
   document.body.style.overflow = 'hidden';
-  modal.addEventListener('remove', () => { document.body.style.overflow = ''; }, { once: true });
+  if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
 }
 
 function renderMexcProjectDetail() {
@@ -711,11 +729,13 @@ function renderMexcProjectDetail() {
 }
 
 function closeProjectLightbox() {
+  const returnState = projectLightboxReturnState;
+  projectLightboxReturnState = null;
   document.querySelector('.project-lightbox')?.remove();
-  document.body.style.overflow = '';
-  if (projectLightboxReturnState) {
-    const returnState = projectLightboxReturnState;
-    projectLightboxReturnState = null;
+  if (returnState) {
+    document.documentElement.style.overflow = returnState.htmlOverflow;
+    Object.assign(document.body.style, returnState.bodyStyles);
+    window.scrollTo({ top: returnState.scrollY, left: 0, behavior: 'auto' });
     requestAnimationFrame(() => {
       let returnY = returnState.scrollY;
       if (returnState.trigger?.isConnected && returnState.triggerTop !== null) {
@@ -724,6 +744,9 @@ function closeProjectLightbox() {
       window.scrollTo({ top: returnY, left: 0, behavior: 'auto' });
       requestAnimationFrame(() => returnState.trigger?.focus({ preventScroll: true }));
     });
+  } else {
+    document.documentElement.style.overflow = '';
+    document.body.style.overflow = '';
   }
 }
 
