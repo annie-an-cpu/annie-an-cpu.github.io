@@ -124,9 +124,9 @@ promotionStyles.textContent = `
   .project-lightbox img, .project-lightbox video { border-radius: 12px; box-shadow: 0 24px 80px rgba(0,0,0,.48); max-height: calc(100vh - 56px); max-width: calc(100vw - 56px); object-fit: contain; }
   .project-lightbox video { aspect-ratio: 16 / 9; background: #000; display: block; height: auto; width: min(1200px, calc(100vw - 56px)); }
   .project-lightbox-close { background: #fff; border: 0; border-radius: 999px; color: #111; cursor: pointer; font: 500 28px/1 Arial, sans-serif; height: 42px; position: absolute; right: 22px; top: 22px; width: 42px; }
-  .project-lightbox.project-lightbox-long { align-items: flex-start; overflow: auto; padding: 72px 24px 40px; }
-  .project-lightbox-long .project-lightbox-media { margin: 0 auto; max-width: 1200px; width: 100%; }
-  .project-lightbox-long img { display: block; height: auto; max-height: none; max-width: 100%; width: 100%; }
+  .project-lightbox.project-lightbox-long { -webkit-overflow-scrolling: touch; align-items: flex-start; overflow-x: hidden; overflow-y: auto; padding: 72px 24px 40px; touch-action: pan-y; }
+  .project-lightbox-long .project-lightbox-media { margin: 0 auto; max-width: 1200px; touch-action: pan-y; width: 100%; }
+  .project-lightbox-long img { display: block; height: auto; max-height: none; max-width: 100%; touch-action: pan-y; width: 100%; }
   .project-lightbox-long .project-lightbox-close { position: fixed; }
   .mexc-detail { background: #050811; box-sizing: border-box; color: #fff; font-family: "Microsoft YaHei", "Noto Sans SC", Inter, Arial, sans-serif; min-height: 100vh; padding: 32px clamp(20px, 6vw, 112px) 80px; }
   .mexc-detail-back { color: #fff; display: inline-block; font-size: 15px; margin-bottom: 56px; text-decoration: none; }
@@ -694,9 +694,9 @@ function openProjectLightbox(source, label, longImage = false, trigger = null) {
     modal.setAttribute('role', 'dialog');
     modal.setAttribute('aria-modal', 'true');
     modal.innerHTML = '<button type="button" class="project-lightbox-close" aria-label="关闭预览">×</button><div class="project-lightbox-media"></div>';
-    document.body.append(modal);
+    document.documentElement.append(modal);
     modal.addEventListener('click', event => {
-      if (event.target === modal || event.target.closest('.project-lightbox-close') || event.target.matches('.project-lightbox-media img')) {
+      if (event.target === modal || event.target.closest('.project-lightbox-close')) {
         closeProjectLightbox();
       }
     });
