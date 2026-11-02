@@ -275,6 +275,21 @@ promotionStyles.textContent = `
     transform: translateY(-50%) !important;
     width: 100% !important;
   }
+  .framer-ZQFle .framer-wt0rex .framer-1mw7dzm,
+  .framer-ZQFle .framer-wt0rex .framer-kr8kel,
+  .framer-ZQFle .framer-wt0rex .framer-10kg1oh {
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+  .framer-ZQFle .framer-wt0rex .framer-kr8kel h2,
+  .framer-ZQFle .framer-wt0rex .framer-10kg1oh p {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
 `;
 document.head.appendChild(promotionStyles);
 
